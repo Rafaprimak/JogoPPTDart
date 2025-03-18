@@ -9,44 +9,97 @@ class Jogo2 extends StatefulWidget {
 }
 
 class _Jogo2State extends State<Jogo2> {
-  var _imagemApp = AssetImage('images/padrao.png')!;
-  var _mensagem = '';
-
-  final Map<String, AssetImage> _opcaoImagem = {
-    'pedra': AssetImage('images/pedra.png')!,
-    'papel': AssetImage('images/papel.png')!,
-    'tesoura': AssetImage('images/tesoura.png')!,
-  };
+  var _mensagem = 'Escolha entre Par ou Ímpar';
 
   void _opcaoSelecionada(String escolhaUsuario) {
-    final opcoes = ['pedra', 'papel', 'tesoura'];
-    var numero = Random().nextInt(3);
-    var escolhaApp = opcoes[numero];
-    setState(() {
-      this._imagemApp = _opcaoImagem[escolhaApp]!;
+    @override
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Par ou Ímpar'),
+          backgroundColor: Colors.green,
+        ),
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            Padding(
+              padding: EdgeInsets.only(top: 32, bottom: 16),
+              child: Text(
+                'Escolha do App',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 32, bottom: 16),
+              child: Text(
+                this._mensagem,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                ElevatedButton(
+                  onPressed: () => _opcaoSelecionada('Par'),
+                  child: Text('Par'),
+                ),
+                ElevatedButton(
+                  onPressed: () => _opcaoSelecionada('Ímpar'),
+                  child: Text('Ímpar'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
 
-      if (
-        (escolhaUsuario == 'pedra' && escolhaApp == 'tesoura') ||
-        (escolhaUsuario == 'tesoura' && escolhaApp == 'papel') ||
-        (escolhaUsuario == 'papel' && escolhaApp == 'pedra')
-      ) {
-        setState(() {
-          this._mensagem = 'Parabéns! Você ganhou!';
-        });
-      } else if (
-        (escolhaApp == 'pedra' && escolhaUsuario == 'tesoura') ||
-        (escolhaApp == 'tesoura' && escolhaUsuario == 'papel') ||
-        (escolhaApp == 'papel' && escolhaUsuario == 'pedra')
-      ) {
-        setState(() {
-          this._mensagem = 'Você perdeu!';
-        });
-      } else {
-        setState(() {
-          this._mensagem = 'Empatamos!';
-        });
-      }
-    });
+    void _mostrarEscolhaNumero(String escolhaUsuario) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Escolha um número de 0 a 10'),
+            content: Container(
+              height: 150,
+              child: Column(
+                children: List.generate(11, (index) {
+                  return ElevatedButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      _verificarResultado(escolhaUsuario, index);
+                    },
+                    child: Text(index.toString()),
+                  );
+                }),
+              ),
+            ),
+          );
+        },
+      );
+    }
+
+    void _verificarResultado(String escolhaUsuario, int numeroUsuario) {
+      var numeroApp = Random().nextInt(11);
+      var soma = numeroUsuario + numeroApp;
+      var resultado = soma % 2 == 0 ? 'Par' : 'Ímpar';
+
+      setState(() {
+        _mensagem = 'Você escolheu $numeroUsuario e o App escolheu $numeroApp. A soma é $soma, que é $resultado. Você ${resultado == escolhaUsuario ? 'ganhou' : 'perdeu'}!';
+      });
+    }
+
+    _opcaoSelecionada(escolhaUsuario);
+    _mostrarEscolhaNumero(escolhaUsuario);
+
   }
 
   
@@ -54,7 +107,8 @@ class _Jogo2State extends State<Jogo2> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Jokenpo'),
+        title: Text('Par ou Ímpar'),
+        backgroundColor: Colors.green,
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -70,7 +124,6 @@ class _Jogo2State extends State<Jogo2> {
               ),
             ),
           ),
-          Image(image: this._imagemApp),
           Padding(
             padding: EdgeInsets.only(top: 32, bottom: 16),
             child: Text(
@@ -81,25 +134,6 @@ class _Jogo2State extends State<Jogo2> {
                 fontWeight: FontWeight.bold
               ),
             ),
-          ),
-
-          Row(
-
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              GestureDetector(
-                onTap: () => _opcaoSelecionada('pedra'),
-                child: Image.asset('images/pedra.png', height: 100,),
-              ),
-              GestureDetector(
-                onTap: () => _opcaoSelecionada('papel'),
-                child: Image.asset('images/papel.png', height: 100,),
-              ),
-              GestureDetector(
-                onTap: () => _opcaoSelecionada('tesoura'),
-                child: Image.asset('images/tesoura.png', height: 100,),
-              ),
-            ],
           ),
         ],
       ),
